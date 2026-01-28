@@ -1,3 +1,6 @@
+import { FiEdit } from "react-icons/fi";
+import { RiDeleteBin2Line } from "react-icons/ri";
+
 const FeedbackRender = ({ feedback, deleteList, editList }) => {
   if (feedback.length === 0) {
     return <p className="text-center text-gray-500">No feedback available</p>;
@@ -21,13 +24,13 @@ const FeedbackRender = ({ feedback, deleteList, editList }) => {
                 onClick={() => editList(fb.id)}
                 className="px-3 py-1 bg-blue-500 text-white rounded"
               >
-                Edit
+                <FiEdit />
               </button>
               <button
                 onClick={() => deleteList(fb.id)}
                 className="px-3 py-1 bg-red-500 text-white rounded"
               >
-                Delete
+                <RiDeleteBin2Line />
               </button>
             </div>
           </div>
@@ -41,7 +44,9 @@ const FeedbackRender = ({ feedback, deleteList, editList }) => {
             {fb.course} | Semester {fb.semester} | {fb.department}
           </p>
 
-          <p className="text-gray-700">{fb.feedbackText}</p>
+          <p className="text-gray-700">
+            <strong>Feedback</strong> : {fb.feedbackText}
+          </p>
         </div>
       ))}
     </div>
