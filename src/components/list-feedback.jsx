@@ -22,13 +22,13 @@ const FeedbackRender = ({ feedback, deleteList, editList }) => {
             <div className="flex gap-2">
               <button
                 onClick={() => editList(fb.id)}
-                className="px-3 py-1 bg-blue-500 text-white rounded"
+                className="px-3 py-1 bg-blue-500 text-white rounded cursor-pointer"
               >
                 <FiEdit />
               </button>
               <button
                 onClick={() => deleteList(fb.id)}
-                className="px-3 py-1 bg-red-500 text-white rounded"
+                className="px-3 py-1 bg-red-500 text-white rounded cursor-pointer"
               >
                 <RiDeleteBin2Line />
               </button>

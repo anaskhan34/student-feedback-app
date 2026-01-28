@@ -196,7 +196,7 @@ function App() {
               required
             />
 
-            <button className="w-full bg-blue-600 text-white py-2 rounded-lg hover:bg-blue-700 transition">
+            <button className="w-full bg-blue-600 text-white py-2 rounded-lg hover:bg-blue-700 transition cursor-pointer">
               {isEdit ? "Save Changes" : "Submit Feedback"}
             </button>
           </form>
