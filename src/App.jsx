@@ -1,9 +1,11 @@
 import { useState } from "react";
-import FeedbackRender from "./components/list-feedback";
+// import FeedbackRender from "./components/FeedbackRender";
 import Swal from "sweetalert2";
+import FeedbackRender from "./components/list-feedback";
 
 function App() {
   const [feedback, setFeedback] = useState({
+    id: null,
     name: "",
     email: "",
     course: "",
@@ -13,35 +15,34 @@ function App() {
     rating: "",
     feedbackText: "",
   });
-  const [isEdit, setIsEdit] = useState(false);
-  const [editIndex, setEditIndex] = useState(null);
 
+  const [isEdit, setIsEdit] = useState(false);
+  const [editId, setEditId] = useState(null);
   const [allFeedbackList, setAllFeedbackList] = useState([]);
+  const [ratingFilter, setRatingFilter] = useState("all");
+
   const handleChange = (e) => {
     const { name, value } = e.target;
-    setFeedback((prev) => ({
-      ...prev,
-      [name]: value,
-    }));
+    setFeedback((prev) => ({ ...prev, [name]: value }));
   };
+
   const handleSubmit = (e) => {
     e.preventDefault();
 
     if (isEdit) {
-      if (feedback && editIndex !== null) {
-        const updateEdit = allFeedbackList.map((item, i) =>
-          i === editIndex ? feedback : item,
-        );
-        setAllFeedbackList(updateEdit);
-        setIsEdit(false);
-        setEditIndex(null);
-      }
+      setAllFeedbackList((prev) =>
+        prev.map((item) => (item.id === editId ? feedback : item)),
+      );
+      setIsEdit(false);
+      setEditId(null);
+
+      Swal.fire("Updated!", "Feedback updated successfully", "success");
     } else {
-      setAllFeedbackList((prev) => [...prev, feedback]);
+      setAllFeedbackList((prev) => [...prev, { ...feedback, id: Date.now() }]);
     }
 
-    // Clear form after submission
     setFeedback({
+      id: null,
       name: "",
       email: "",
       course: "",
@@ -53,169 +54,177 @@ function App() {
     });
   };
 
-  const deleteList = (index) => {
-    let confirmDel = window.confirm("Are you Sure to delete");
-    // Swal.fire("delete!", "Your action was completed successfully.", "success");
-
-    if (!confirmDel) return;
-
-    let updateFromDelete = allFeedbackList.filter((val, i) => i !== index);
-    setAllFeedbackList(updateFromDelete);
+  const deleteList = (id) => {
+    Swal.fire({
+      title: "Are you sure?",
+      icon: "warning",
+      showCancelButton: true,
+    }).then((res) => {
+      if (res.isConfirmed) {
+        setAllFeedbackList((prev) => prev.filter((f) => f.id !== id));
+        Swal.fire("Deleted!", "", "success");
+      }
+    });
   };
 
-  const editList = (index) => {
+  const editList = (id) => {
     setIsEdit(true);
-    setEditIndex(index);
-    setFeedback(allFeedbackList[index]);
+    setEditId(id);
+    setFeedback(allFeedbackList.find((item) => item.id === id));
   };
+
+  const filteredFeedback = allFeedbackList.filter((item) => {
+    const r = Number(item.rating);
+    if (ratingFilter === "all") return true;
+    if (ratingFilter === "4") return r >= 4;
+    if (ratingFilter === "5") return r === 5;
+    return true;
+  });
 
   return (
-    <>
-      <center>
-        <div>
-          <form onSubmit={handleSubmit}>
-            <label htmlFor="name">name</label>
-            <input
-              type="text"
-              id="name"
-              name="name"
-              value={feedback.name}
-              onChange={handleChange}
-              placeholder="name"
-              required
-            />
-            <br />
-            <br />
-            {/* email */}
-            <label htmlFor="email">email</label>
-            <input
-              type="email"
-              id="email"
-              name="email"
-              value={feedback.email}
-              onChange={handleChange}
-              placeholder="email"
-              required
-            />
-            <br />
-            <br />
-            {/* course */}
-            <label htmlFor="course">course</label>
-            <input
-              type="text"
-              id="course"
-              name="course"
-              value={feedback.course}
-              onChange={handleChange}
-              placeholder="course"
-              required
-            />
-            <br />
-            <br />
-            {/* semester */}
-            <label htmlFor="semester">semester</label>
+    <div className="min-h-screen bg-slate-100 p-6">
+      <div className="max-w-7xl mx-auto">
+        {/* HEADER */}
+        <div className="bg-gradient-to-r from-blue-600 to-blue-500 text-white rounded-xl p-8 text-center shadow mb-10">
+          <h1 className="text-3xl md:text-4xl font-bold">
+            Student Feedback Portal
+          </h1>
+          <p className="text-blue-100 mt-2">
+            Share your thoughts & help us improve
+          </p>
+        </div>
+
+        {/* GRID */}
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+          {/* FORM */}
+          <form
+            onSubmit={handleSubmit}
+            className="bg-white rounded-xl shadow p-6 space-y-4"
+          >
+            <h2 className="text-xl font-semibold text-gray-700">
+              Submit Your Feedback
+            </h2>
+
+            {[
+              ["name", "Name"],
+              ["email", "Email"],
+              ["course", "Course"],
+              ["instructor", "Instructor"],
+            ].map(([key, label]) => (
+              <input
+                key={key}
+                name={key}
+                value={feedback[key]}
+                onChange={handleChange}
+                placeholder={label}
+                required
+                className="w-full border rounded-lg px-4 py-2 focus:ring-2 focus:ring-blue-400 outline-none"
+              />
+            ))}
+
             <select
-              type="text"
-              id="semester"
               name="semester"
               value={feedback.semester}
               onChange={handleChange}
+              className="w-full border rounded-lg px-4 py-2"
             >
-              <option value="">select your semester</option>
-              <option value="one">one</option>
-              <option value="two">two</option>
-              <option value="three">three</option>
-              <option value="four">four</option>
-              <option value="five">five</option>
-              <option value="six">six</option>
-              <option value="seven">seven</option>
-              <option value="eight">eight</option>
+              <option value="">Select Semester</option>
+              {[1, 2, 3, 4, 5, 6, 7, 8].map((s) => (
+                <option key={s} value={s}>
+                  Semester {s}
+                </option>
+              ))}
             </select>
-            <br />
-            <br />
-            {/* department */}
-            <label htmlFor="department">department</label>
+
             <select
-              type="text"
-              id="department"
               name="department"
               value={feedback.department}
               onChange={handleChange}
-              required
+              className="w-full border rounded-lg px-4 py-2"
             >
-              <option value="">Select your Department</option>
-              <option value="computer science">CS</option>
-              <option value="software engineering">SE</option>
-              <option value="artificial intelligence">AI</option>
+              <option value="">Select Department</option>
+              <option value="Computer Science">Computer Science</option>
+              <option value="Software Engineering">Software Engineering</option>
+              <option value="Artificial Intelligence">
+                Artificial Intelligence
+              </option>
+              <option value="Mechanical Engineering">
+                Mechanical Engineering
+              </option>
+              <option value="Electrical Engineering">
+                Electrical Engineering
+              </option>
+              <option value="Civil Engineering">Civil Engineering</option>
+              <option value="Chemical Engineering">Chemical Engineering</option>
+              <option value="Cybersecurity Engineering">
+                Cybersecurity Engineering
+              </option>
             </select>
-            <br />
-            <br />
-            {/* instructor */}
-            <label htmlFor="instructor">instructor</label>
-            <input
-              type="text"
-              id="instructor"
-              name="instructor"
-              placeholder="instructor"
-              value={feedback.instructor}
-              onChange={handleChange}
-              required
-            />
-            <br /> <br />
-            {/* rating */}
-            <p>give rating</p>
-            <br />
-            <div>
-              {[1, 2, 3, 4, 5].map((num) => {
-                return (
-                  <span key={num}>
-                    <input
-                      type="radio"
-                      id={`rating-${num}`}
-                      name="rating"
-                      value={num}
-                      checked={feedback.rating === String(num)}
-                      onChange={handleChange}
-                      required
-                    />
-                    <label htmlFor={`rating-${num}`}>{num}</label>
+
+            {/* STARS */}
+            <div className="flex justify-center gap-2">
+              {[1, 2, 3, 4, 5].map((num) => (
+                <label key={num} className="cursor-pointer text-3xl">
+                  <input
+                    type="radio"
+                    name="rating"
+                    value={num}
+                    checked={feedback.rating === String(num)}
+                    onChange={handleChange}
+                    className="hidden"
+                  />
+                  <span
+                    className={
+                      Number(feedback.rating) >= num
+                        ? "text-yellow-400"
+                        : "text-gray-300"
+                    }
+                  >
+                    ★
                   </span>
-                );
-              })}
+                </label>
+              ))}
             </div>
-            <br />
-            <br />
-            {/* feedback Text */}
-            <label htmlFor="feedbackText">Feedback</label>
+
             <textarea
-              type="text"
-              id="feedbackText"
               name="feedbackText"
-              placeholder="Minimum 50 words are allowed"
-              cols={50}
-              rows={10}
               value={feedback.feedbackText}
               onChange={handleChange}
+              rows="4"
+              placeholder="Write your feedback..."
+              className="w-full border rounded-lg px-4 py-2"
               required
             />
-            <br /> <br />
-            {isEdit ? (
-              <button type="submit">save</button>
-            ) : (
-              <button type="submit">Submit</button>
-            )}
+
+            <button className="w-full bg-blue-600 text-white py-2 rounded-lg hover:bg-blue-700 transition">
+              {isEdit ? "Save Changes" : "Submit Feedback"}
+            </button>
           </form>
+
+          {/* RIGHT SIDE */}
+          <div className="lg:col-span-2 space-y-6">
+            {/* FILTER */}
+            <div className="bg-white p-4 rounded-xl shadow flex flex-wrap gap-3">
+              <select
+                value={ratingFilter}
+                onChange={(e) => setRatingFilter(e.target.value)}
+                className="border px-4 py-2 rounded-lg"
+              >
+                <option value="all">All</option>
+                <option value="4">4★ & Above</option>
+                <option value="5">5★ Only</option>
+              </select>
+            </div>
+
+            <FeedbackRender
+              feedback={filteredFeedback}
+              deleteList={deleteList}
+              editList={editList}
+            />
+          </div>
         </div>
-        <br />
-        <br />
-        <hr />
-        <FeedbackRender
-          feedback={allFeedbackList}
-          deleteList={deleteList}
-          editList={editList}
-        />
-      </center>
-    </>
+      </div>
+    </div>
   );
 }
 
