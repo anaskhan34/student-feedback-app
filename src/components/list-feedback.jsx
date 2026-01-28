@@ -45,6 +45,9 @@ const FeedbackRender = ({ feedback, deleteList, editList }) => {
           </p>
 
           <p className="text-gray-700">
+            <strong>Instructor :</strong> : {fb.instructor}
+          </p>
+          <p className="text-gray-700">
             <strong>Feedback</strong> : {fb.feedbackText}
           </p>
         </div>

@@ -85,7 +85,7 @@ function App() {
     <div className="min-h-screen bg-slate-100 p-6">
       <div className="max-w-7xl mx-auto">
         {/* HEADER */}
-        <div className="bg-gradient-to-r from-blue-600 to-blue-500 text-white rounded-xl p-8 text-center shadow mb-10">
+        <div className="bg-linear-to-r from-blue-600 to-blue-500 text-white rounded-xl p-8 text-center shadow mb-10">
           <h1 className="text-3xl md:text-4xl font-bold">
             Student Feedback Portal
           </h1>
