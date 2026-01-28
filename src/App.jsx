@@ -1,5 +1,4 @@
 import { useState } from "react";
-// import FeedbackRender from "./components/FeedbackRender";
 import Swal from "sweetalert2";
 import FeedbackRender from "./components/list-feedback";
 
